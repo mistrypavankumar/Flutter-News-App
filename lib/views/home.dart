@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/helper/data.dart';
 import 'package:news_app/models/category_model.dart';
 
 import '../helper/news.dart';
 import '../models/article_model.dart';
+import 'articles_view.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -64,38 +66,45 @@ class _HomeState extends State<Home> {
                 child: CircularProgressIndicator(),
               ),
             )
-          : Container(
-              child: Column(
-                children: [
-                  //// Categoires ////
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    height: 70.0,
-                    child: ListView.builder(
-                        itemCount: categories.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return CategoryTile(
-                            imageUrl: categories[index].imageUrl,
-                            categoryName: categories[index].categoryName,
-                          );
-                        }),
-                  ),
-                  //// Blogs /////
+          : SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  children: [
+                    //// Categoires ////
+                    Container(
+                      height: 70.0,
+                      child: ListView.builder(
+                          itemCount: categories.length,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return CategoryTile(
+                              imageUrl: categories[index].imageUrl,
+                              categoryName: categories[index].categoryName,
+                            );
+                          }),
+                    ),
+                    //// Blogs /////
 
-                  Container(
-                    child: ListView.builder(
-                      itemCount: articles.length,
-                      itemBuilder: (context, index) {
-                        return BlogTile(
+                    Container(
+                      padding: EdgeInsets.only(top: 16.0),
+                      child: ListView.builder(
+                        itemCount: articles.length,
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(), // for smooth scroll
+                        itemBuilder: (context, index) {
+                          return BlogTile(
                             imageUrl: articles[index].urlToImage,
                             title: articles[index].title,
-                            description: articles[index].description);
-                      },
+                            description: articles[index].description,
+                            url: articles[index].url,
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
     );
@@ -120,8 +129,8 @@ class CategoryTile extends StatelessWidget {
             //fetching image from internet
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
                 width: 120.0,
                 height: 60,
                 fit: BoxFit.cover,
@@ -152,21 +161,50 @@ class CategoryTile extends StatelessWidget {
 }
 
 class BlogTile extends StatelessWidget {
-  final String imageUrl, title, description;
-  BlogTile(
-      {@required this.imageUrl,
-      @required this.title,
-      @required this.description});
+  final String imageUrl, title, description, url;
+  BlogTile({
+    @required this.imageUrl,
+    @required this.title,
+    @required this.description,
+    @required this.url,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Image.network(imageUrl),
-          Text(title),
-          Text(description),
-        ],
+    return GestureDetector(
+      onTap: () {
+        // used to move to another screen
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ArticleView(
+                      blogUrl: url,
+                    )));
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16.0),
+        child: Column(
+          children: [
+            ClipRRect(
+                borderRadius: BorderRadius.circular(6.0),
+                child: Image.network(imageUrl)),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              description,
+              style: TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

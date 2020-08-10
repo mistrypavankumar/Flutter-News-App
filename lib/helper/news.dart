@@ -4,14 +4,14 @@ import '../models/article_model.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/article_model.dart';
-import '../models/article_model.dart';
+// import '../models/article_model.dart';
 
 class News {
   List<ArticleModel> news = [];
 
   Future<void> getNews() async {
     String url =
-        "http://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=0f996e2478b54bbb97086eff0af0896b";
+        "http://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=0f996e2478b54bbb97086eff0af0896b";
 
     var response = await http.get(url);
 
