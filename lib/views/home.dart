@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/helper/data.dart';
 import 'package:news_app/models/category_model.dart';
+import 'package:news_app/views/category_news.dart';
 
 import '../helper/news.dart';
 import '../models/article_model.dart';
@@ -44,7 +45,7 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Flutter ",
+              "Latest ",
               style: TextStyle(
                 color: Colors.black87,
               ),
@@ -113,7 +114,7 @@ class _HomeState extends State<Home> {
 
 class CategoryTile extends StatelessWidget {
   // variables for fetching images
-  final imageUrl, categoryName;
+  final String imageUrl, categoryName;
   CategoryTile({this.imageUrl, this.categoryName});
 
   @override
@@ -121,6 +122,12 @@ class CategoryTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         //to perform function on tap
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => CategoryNews(
+                      category: categoryName.toLowerCase(),
+                    )));
       },
       child: Container(
         margin: EdgeInsets.only(right: 16.0),
@@ -188,6 +195,7 @@ class BlogTile extends StatelessWidget {
             ClipRRect(
                 borderRadius: BorderRadius.circular(6.0),
                 child: Image.network(imageUrl)),
+            SizedBox(height: 8.0),
             Text(
               title,
               style: TextStyle(
